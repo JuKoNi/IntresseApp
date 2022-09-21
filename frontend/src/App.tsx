@@ -36,7 +36,12 @@ function App() {
     });
     const data = await response.json();
     console.log(data);
-    navigate('/start');
+    if (data.success) {
+      localStorage.setItem('user', data.user);
+      localStorage.setItem('interests', JSON.stringify(data.interests));
+      navigate('/start');
+    }
+
     
   }
 

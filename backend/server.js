@@ -63,6 +63,31 @@ app.post('/login', async (request, response) => {
     response.json(responseObject);
 });
 // lägga till intressen
+app.post('/addinterest', async (request, response) => {
+    const requestData = request.body;
+    let userInterestObject = {
+        user: requestData.user,
+        interests: [requestData.interest]
+    };
+    console.log(userInterestObject);
+    const responseObject = {
+        success: true,
+    };
+    // vi vill kolla om användaren redan har inlagda intressen
+    const userHasInterests = await interestsDB.find({ user: userInterestObject.user });
+    if (userHasInterests.length > 0) {
+        // om det finns ska vi bara uppdatera dennes record i interests.db
+        let user = userHasInterests[0].user;
+        interestsDB.update(
+            {user: user}, 
+            {$push: {interests: requestData.interest}}
+        );
+    } else {
+        // om det inte finns, bara lägga in ett nytt record med anv.namn + intresselista
+        interestsDB.insert(userInterestObject);
+    }
+    response.json(responseObject);
+});
 // hitta matchande intressen
 
 // starta servern
